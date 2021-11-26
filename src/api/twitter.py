@@ -8,6 +8,9 @@ from .openai import make_openai_request
 
 class RobotStream(tweepy.Stream):
 
+    def set_api(self, api):
+        self.api = api
+
     def on_status(self, status):
         assert check_content(status)
 

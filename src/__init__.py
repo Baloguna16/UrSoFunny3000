@@ -50,6 +50,8 @@ class Bot:
             access_token_secret=self.ACCESS_SECRET
         )
 
+        robot_stream.set_api(self.api)
+
         robot_stream.filter(
             follow=[user_to_follow.id],
             languages=['en']
