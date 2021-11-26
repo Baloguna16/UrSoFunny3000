@@ -1,15 +1,12 @@
 import os
-import logging
-
-import openai
 import tweepy
-from tweepy import StreamListener
+import logging
 
 from .utils import check_content
 from .utils import load_stored_resposne
 from .openai import make_openai_request
 
-class RobotListener(StreamListener):
+class RobotStream(tweepy.Stream):
 
     def on_status(self, status):
         assert check_content(status)

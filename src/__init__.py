@@ -1,6 +1,7 @@
-from tweepy import Stream, OAuthHandler
+import os
+import tweepy
 
-from .api import RobotListener
+from .api import RobotStream
 
 class Bot:
 
@@ -12,15 +13,20 @@ class Bot:
             self.CONSUMER_SECRET = os.getenv("TWITTER_CONSUMER_SECRET")
 
             self.ACCESS_KEY = os.getenv("TWITTER_ACCESS_KEY")
-            self.ACCESS_SECRET = os.getenv("TWITTER_ACCESS_KEY")
+            self.ACCESS_SECRET = os.getenv("TWITTER_ACCESS_SECRET")
 
-            self._auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-            self._auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+            self._auth = tweepy.OAuthHandler(
+                consumer_key=self.CONSUMER_KEY,
+                consumer_secret=self.CONSUMER_SECRET
+            )
+            self._auth.set_access_token(
+                key=self.ACCESS_KEY,
+                secret=self.ACCESS_SECRET
+            )
 
             self.api = tweepy.API(
-                self._auth,
-                wait_on_rate_limit=True,
-                wait_on_rate_limit_notify=True
+                auth=self._auth,
+                wait_on_rate_limit=True
             )
 
             Bot._instance = self
@@ -35,14 +41,19 @@ class Bot:
         return Bot._instance
 
     def run(self):
-        robot_stream_listener = RobotListener()
+        user_to_follow = self.api.get_user(screen_name='Ade_in_myLife')
 
-        stream = tweepy.Stream(
-            auth=self.api.auth,
-            listener=robot_stream_listener
+        robot_stream = RobotStream(
+            consumer_key=self.CONSUMER_KEY,
+            consumer_secret=self.CONSUMER_SECRET,
+            access_token=self.ACCESS_KEY,
+            access_token_secret=self.ACCESS_SECRET
         )
-        
-        stream.retweet()
+
+        robot_stream.filter(
+            follow=[user_to_follow.id],
+            languages=['en']
+        )
 
 def create_bot():
     bot = Bot.get_instance()
