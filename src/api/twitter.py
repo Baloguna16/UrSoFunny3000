@@ -1,22 +1,49 @@
 import os
-import tweepy
 import logging
+from tweepy import Stream
 
 from .utils import check_content
-from .utils import load_stored_resposne
+from .utils import load_stored_response
 from .openai import make_openai_request
 
-class RobotStream(tweepy.Stream):
+class RobotStream(Stream):
 
-    def set_api(self, api):
-        self.api = api
+    def __init__(
+        self,
+        consumer_key,
+        consumer_secret,
+        access_token,
+        access_token_secret,
+        *,
+        chunk_size=512,
+        daemon=False,
+        max_retries=float('inf'),
+        proxy=None,
+        verify=True,
+        current_client=None
+    ):
+        super().__init__(
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+            chunk_size=chunk_size,
+            daemon=daemon,
+            max_retries=max_retries,
+            proxy=proxy,
+            verify=verify
+        )
 
-    def on_status(self, status):
-        assert check_content(status)
+        self.client = current_client
 
-        #response = make_openai_request(status)
-        response = load_stored_resposne(status)
 
-        assert check_content(response)
+    def on_status(self, tweet):
+        if check_content(tweet.text):
 
-        self.api.update_status(response)
+            #response = make_openai_request(status)
+            response_text = load_stored_response(tweet.text)
+
+            self.client.create_tweet(
+                text=response_text,
+                quote_tweet_id=tweet.id
+            )
