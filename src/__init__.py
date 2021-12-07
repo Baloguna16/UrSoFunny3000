@@ -47,7 +47,7 @@ class Bot:
             Bot()
         return Bot._instance
 
-    def run(self):
+    def ama(self):
         response = self.client.get_user(username=TWITTER_BOT_HANDLE)
         user = response.data
 
@@ -59,7 +59,8 @@ class Bot:
             consumer_secret=self.CONSUMER_SECRET,
             access_token=self.ACCESS_KEY,
             access_token_secret=self.ACCESS_SECRET,
-            current_client=self.client
+            current_client=self.client,
+            daemon=True
         )
 
         robot_stream.filter(

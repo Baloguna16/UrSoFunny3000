@@ -1,1 +1,1 @@
-from .twitter import RobotStream
+from .stream import RobotStream
