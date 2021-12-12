@@ -30,9 +30,9 @@ class WordGraph:
 
         self._set[word] = adj_list
 
-    def get(self, word):
+    def get(self, word, silent_fail=False):
         adj_list = self._set.get(word)
-        assert adj_list
+        if silent_fail: assert adj_list
         return adj_list
 
     @staticmethod

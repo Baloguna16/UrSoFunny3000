@@ -5,7 +5,8 @@ from .api import RobotStream
 from .api.graph import WordGraph
 from .api.const import TWITTER_BOT_HANDLE
 from .api.scrapers import get_press_releases
-from .api.markov import create_training_set, build_word_graph, generate_tweet
+from .api.markov import create_training_set, generate_tweet
+from .api.markov import build_word_graph, build_two_word_graph
 
 class Bot:
 
@@ -94,6 +95,7 @@ class Bot:
     def train(self):
         training_set = create_training_set(dir='data')
         word_graph = build_word_graph(training_set)
+        word_graph = build_two_word_graph(training_set)
         self.word_graph = word_graph
 
     def sample(self):
@@ -102,6 +104,7 @@ class Bot:
 
         else: word_graph = self.word_graph
         sample_tweet = generate_tweet(word_graph, prompt='i')
+        
         print("Sample tweet: ", sample_tweet)
 
 
