@@ -3,8 +3,7 @@ import logging
 from tweepy import Stream
 
 from .utils import check_content
-from .utils import load_stored_response
-from .openai import make_openai_request
+from .markov import load_stored_response
 
 class RobotStream(Stream):
 
@@ -40,7 +39,6 @@ class RobotStream(Stream):
     def on_status(self, tweet):
         if check_content(tweet.text):
 
-            #response = make_openai_request(status)
             response_text = load_stored_response(tweet.text)
 
             self.client.create_tweet(

@@ -1,5 +1,3 @@
-from flask import Flask
-
 from src import create_bot
 
 bot = create_bot()

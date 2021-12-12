@@ -2,7 +2,10 @@ import os
 import tweepy
 
 from .api import RobotStream
+from .api.graph import WordGraph
 from .api.const import TWITTER_BOT_HANDLE
+from .api.scrapers import get_press_releases
+from .api.markov import create_training_set, build_word_graph, generate_tweet
 
 class Bot:
 
@@ -36,6 +39,8 @@ class Bot:
                 wait_on_rate_limit=True
             )
 
+            self.word_graph = None
+
             Bot._instance = self
             return
         raise Exception("UrSoFunny3000 should only be created once.")
@@ -67,6 +72,38 @@ class Bot:
             follow=[user['id'] for user in followers],
             languages=['en']
         )
+
+    def scrape_twitter(self, target):
+        response = self.client.get_user(username=target)
+        user = response.data
+
+        response = self.client.get_users_tweets(id=user['id'], max_results=100)
+        tweets = response.data
+
+        dir = 'data'
+        for tweet in tweets:
+            filename = f'{target}_{tweet["id"]}.txt'
+            file = os.path.join(dir, filename)
+            file = open(file, 'w+')
+            file.write(tweet["text"])
+            file.close()
+
+    def scrape_html(self):
+        get_press_releases()
+
+    def train(self):
+        training_set = create_training_set(dir='data')
+        word_graph = build_word_graph(training_set)
+        self.word_graph = word_graph
+
+    def sample(self):
+        if self.word_graph is None:
+            word_graph = WordGraph.load()
+
+        else: word_graph = self.word_graph
+        sample_tweet = generate_tweet(word_graph, prompt='i')
+        print("Sample tweet: ", sample_tweet)
+
 
 def create_bot():
     bot = Bot.get_instance()
