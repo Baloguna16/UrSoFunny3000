@@ -92,8 +92,8 @@ class Bot:
     def scrape_html(self):
         get_press_releases()
 
-    def train(self):
-        training_set = create_training_set(dir='data')
+    def train(self, dir='data/shrek'):
+        training_set = create_training_set(dir)
         word_graph = build_word_graph(training_set)
         word_graph = build_two_word_graph(training_set)
         self.word_graph = word_graph
@@ -104,7 +104,7 @@ class Bot:
 
         else: word_graph = self.word_graph
         sample_tweet = generate_tweet(word_graph, prompt='i')
-        
+
         print("Sample tweet: ", sample_tweet)
 
 

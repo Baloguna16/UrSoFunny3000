@@ -5,6 +5,7 @@
 
 pickle
 data
+*.tar
 *.tar.gz
 
 # python
